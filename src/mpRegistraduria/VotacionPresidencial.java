@@ -2,7 +2,6 @@ package mpRegistraduria;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
-import mnRegistraduria.EncriptacionPresidencial;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -23,7 +22,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mdRegistraduria.ConexionVotacionPresidencial;
+import mdRegistraduria.Conexion;
+import mnRegistraduria.Encriptacion;
 
 public class VotacionPresidencial extends javax.swing.JFrame {
 
@@ -503,13 +503,13 @@ public class VotacionPresidencial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        ConexionVotacionPresidencial conexion = new ConexionVotacionPresidencial();
-        EncriptacionPresidencial encriptando = new EncriptacionPresidencial();
+        Conexion conexion = new Conexion();
+        Encriptacion encriptando = new Encriptacion();
         Connection con = null;
 
         try {
             // en esta parte agrego la tabla y le pongo los valores que ingrese en la interfaz
-            con = ConexionVotacionPresidencial.getConection();
+            con = Conexion.getConection();
             ps = con.prepareStatement("INSERT INTO datos_votacion_presidecial (nombre,apellido,correo,contraseña,votado) VALUES(?,?,?,?,?)");
             ps.setString(1, txtnombre.getText());
             ps.setString(2, encriptando.encriptacion(txtapellidos.getText()));
@@ -568,7 +568,7 @@ public class VotacionPresidencial extends javax.swing.JFrame {
             tabla.addCell("VOTADO");
 
             try {
-                Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/votacionprecidencial", "root", "samuel");
+                Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/registraduria", "root", "samuel0216");
                 PreparedStatement pst = cn.prepareStatement("select * from datos_votacion_presidecial");
 
                 ResultSet rs1 = pst.executeQuery();

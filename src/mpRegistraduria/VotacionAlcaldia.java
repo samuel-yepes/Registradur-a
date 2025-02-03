@@ -3,7 +3,6 @@ package mpRegistraduria;
 
 
 
-import mnRegistraduria.EncriptacionAlcadia;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -26,7 +25,8 @@ import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Font;
 import java.io.IOException;
-import mdRegistraduria.ConexionVotacionAlcaldia;
+import mdRegistraduria.Conexion;
+import mnRegistraduria.Encriptacion;
 
 
 public class VotacionAlcaldia extends javax.swing.JFrame {
@@ -430,16 +430,16 @@ public class VotacionAlcaldia extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-         ConexionVotacionAlcaldia conexion = new  ConexionVotacionAlcaldia();
-         EncriptacionAlcadia encriptando = new EncriptacionAlcadia();
+         Conexion conexion = new Conexion();
+         Encriptacion encriptando = new Encriptacion();
         Connection con = null;
         
         try{
             // en esta parte agrego la tabla y le pongo los valores que ingrese en la interfaz
-           con = ConexionVotacionAlcaldia.getConection();          
+           con = Conexion.getConection();
            ps = con.prepareStatement("INSERT INTO  datos_votacion_alcaldia (nombre,apellido,correo,contraseña,votado) VALUES(?,?,?,?,?)");
            ps.setString(1, txtnombre.getText());
-           ps.setString(2, encriptando.encriptacion(txtapellidos.getText()));
+           ps.setString(2, txtapellidos.getText());
            ps.setString(3, txtcorreo.getText());
            ps.setString(4, encriptando.encriptacion(txtcontraseña.getText()));
            ps.setString(5, encriptando.encriptacion(cbxcandidatos.getSelectedItem().toString()));
@@ -497,7 +497,7 @@ public class VotacionAlcaldia extends javax.swing.JFrame {
             
             
            try{
-               Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/votacionalcaldia", "root", "samuel");
+               Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/registraduria", "root", "samuel0216");
                PreparedStatement pst = cn.prepareStatement("select * from datos_votacion_alcaldia");
                
                ResultSet rs1 = pst.executeQuery();

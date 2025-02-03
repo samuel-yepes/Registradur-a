@@ -1,7 +1,7 @@
 package mpRegistraduria;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
-import mnRegistraduria.EncriptacionSocial;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,25 +16,19 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.HeadlessException;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import mdRegistraduria.ConexionRegistroSocial;
-
+import mdRegistraduria.Conexion;
+import mnRegistraduria.Encriptacion;
 
 public class RegistroSocial extends javax.swing.JFrame {
-       
 
     PreparedStatement ps;
     PreparedStatement ps1;
     ResultSet rs;
 
-
-
-    private void cajasLimpias(){
+    private void cajasLimpias() {
         txtclave.setText(null);
         txtnombre.setText(null);
         txtapellido.setText(null);
@@ -48,8 +42,6 @@ public class RegistroSocial extends javax.swing.JFrame {
         txtlugar_nacimiento.setText(null);
         txtenfermedades.setText(null);
     }
-    
-    
 
     public RegistroSocial() {
         initComponents();
@@ -57,8 +49,6 @@ public class RegistroSocial extends javax.swing.JFrame {
         setResizable(false);
         txtid.setVisible(false);
     }
-    
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -397,16 +387,16 @@ public class RegistroSocial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnbuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscarActionPerformed
-        ConexionRegistroSocial conexion = new ConexionRegistroSocial();
+        Conexion conexion = new Conexion();
         Connection con = null;
-        
+
         try {
-            con = ConexionRegistroSocial.getConection();
+            con = Conexion.getConection();
             ps = con.prepareStatement("SELECT * FROM datos_registro_personas WHERE clave = ?");
             ps.setString(1, txtclave.getText());
             rs = ps.executeQuery(); // con este metodo traigo todos los datos de la base de datos
 
-            if (rs.next()){
+            if (rs.next()) {
                 txtid.setText(rs.getString("clave"));
                 txtnombre.setText(rs.getString("nombre"));
                 txtapellido.setText(rs.getString("apellidos"));
@@ -430,12 +420,12 @@ public class RegistroSocial extends javax.swing.JFrame {
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
         Connection con1 = null;
         try {
-            con1 =ConexionRegistroSocial.getConection();
+            con1 = Conexion.getConection();
             ps = con1.prepareStatement(" DELETE FROM datos_registro_personas WHERE clave=?");
-            ps.setInt(1, Integer.parseInt(txtid.getText()));
+            ps.setString(1, txtid.getText());
 
             int rs = ps.executeUpdate();
-            if (rs > 0 ) {
+            if (rs > 0) {
                 JOptionPane.showMessageDialog(null, "persona eliminada");
                 cajasLimpias();
             } else {
@@ -451,7 +441,7 @@ public class RegistroSocial extends javax.swing.JFrame {
     private void btnactualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizarActionPerformed
         Connection con = null;
         try {
-            con =  ConexionRegistroSocial.getConection();
+            con = Conexion.getConection();
             ps = con.prepareStatement(" UPDATE datos_registro_personas SET clave=?, nombre=?, apellidos=?, edad=?, direccion=?, telefono=?, correo=?, fechaNacimiento=?, genero=?, cedula=?, lugarNacimiento=?, enfermedades=? WHERE clave=?");
             ps.setString(1, txtclave.getText());
             ps.setString(2, txtnombre.getText());
@@ -484,43 +474,27 @@ public class RegistroSocial extends javax.swing.JFrame {
 
     private void btnguardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnguardarActionPerformed
         Connection con = null;
-        EncriptacionSocial encriptando1 = new EncriptacionSocial();
-
+        Encriptacion encriptando = new Encriptacion();
+        
         try {
-            con =  ConexionRegistroSocial.getConection();
+            con = Conexion.getConection();
             ps = con.prepareStatement("INSERT INTO datos_registro_personas (clave,nombre,apellidos,edad,direccion,telefono,correo,fechaNacimiento,genero,cedula,lugarNacimiento,enfermedades) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
             ps.setString(1, txtclave.getText());
-            ps.setString(2, encriptando1.encriptacion(txtnombre.getText()));
-            ps.setString(3, encriptando1.encriptacion(txtapellido.getText()));
-            ps.setString(4, encriptando1.encriptacion(txtedad.getText()));
-            ps.setString(5, encriptando1.encriptacion(txtdireccion.getText()));
-            ps.setString(6, encriptando1.encriptacion(txttelefono.getText()));
-            ps.setString(7, encriptando1.encriptacion(txtedad.getText()));
-            ps.setString(8, encriptando1.encriptacion( txtfecha_nacimiento.getText()));
+            ps.setString(2, txtnombre.getText());
+            ps.setString(3, txtapellido.getText());
+            ps.setString(4, txtedad.getText());
+            ps.setString(5, encriptando.encriptacion(txtdireccion.getText()));
+            ps.setString(6, encriptando.encriptacion(txttelefono.getText()));
+            ps.setString(7, encriptando.encriptacion(txtedad.getText()));
+            ps.setString(8, encriptando.encriptacion(txtfecha_nacimiento.getText()));
             ps.setString(9, cbxgenero.getSelectedItem().toString());
-            ps.setString(10, encriptando1.encriptacion(txtcedula.getText()));
-            ps.setString(11, encriptando1.encriptacion(txtlugar_nacimiento.getText()));
-            ps.setString(12, encriptando1.encriptacion(txtenfermedades.getText()));
+            ps.setString(10, encriptando.encriptacion(txtcedula.getText()));
+            ps.setString(11, encriptando.encriptacion(txtlugar_nacimiento.getText()));
+            ps.setString(12, txtenfermedades.getText());
 
-            ps1 = con.prepareStatement("INSERT INTO datos1 (clave,nombre,apellidos,edad,direccion,telefono,correo,fechaNacimiento,genero,cedula,lugarNacimiento,enfermedades) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
-            ps1.setString(1, txtclave.getText());
-            ps1.setString(2, txtnombre.getText());
-            ps1.setString(3, txtapellido.getText());
-            ps1.setString(4, txtedad.getText());
-            ps1.setString(5, txtdireccion.getText());
-            ps1.setString(6, txttelefono.getText());
-            ps1.setString(7, txtedad.getText());
-            ps1.setString(8, txtfecha_nacimiento.getText());
-            ps1.setString(9, cbxgenero.getSelectedItem().toString());
-            ps1.setString(10, txtcedula.getText());
-            ps1.setString(11, txtlugar_nacimiento.getText());
-            ps1.setString(12, txtenfermedades.getText());
-
-            
             int rs = ps.executeUpdate();
-            int rs1 = ps1.executeUpdate();
-            
-            if (rs > 0 && rs1 > 0) {
+
+            if (rs > 0) {
                 JOptionPane.showMessageDialog(null, "registro guardado");
                 cajasLimpias();
             } else {
@@ -532,7 +506,6 @@ public class RegistroSocial extends javax.swing.JFrame {
         } catch (HeadlessException | SQLException e) {
             System.out.println("error" + e);
         }
-
 
 
     }//GEN-LAST:event_btnguardarActionPerformed
@@ -559,129 +532,94 @@ public class RegistroSocial extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         Document documento = new Document();
         Document documento1 = new Document();
-        
-        try{
+
+        try {
             String ruta = System.getProperty("user.home");
             PdfWriter.getInstance(documento, new FileOutputStream(ruta + "/Desktop/Desencriptados.pdf"));
+            System.out.println("LA RUTAAAA " + ruta);
             documento.open();
 
             Image img = Image.getInstance("src/mdRegistraduria/BanderaColombia.jpg");
             img.scaleToFit(650, 1000);
             img.setAlignment(Chunk.ALIGN_CENTER);
-            
+
             Paragraph parrafo = new Paragraph();
             parrafo.setAlignment(Paragraph.ALIGN_CENTER);
-            parrafo.add("REPUBLICA DE COLOMBIA \n\n");
             parrafo.setFont(FontFactory.getFont("Tahoma", 18, Font.BOLD, BaseColor.BLUE));
+            parrafo.add("REPUBLICA DE COLOMBIA \n\n");
             parrafo.add("REGISTROS \n\n");
-            
+
             documento.add(img);
             documento.add(parrafo);
-            
-            // AQUI PONGO CUANTAS COLUMNAS VA A TENER EL PDF Y EL TITULO DE CADA COLUMNA CON ADDCELL
+
             PdfPTable tabla = new PdfPTable(12);
-            tabla.addCell("CLAVE");
-            tabla.addCell("NOMBRE");
-            tabla.addCell("APELLIDOS");
-            tabla.addCell("EDAD");
-            tabla.addCell("DIRECCION");
-            tabla.addCell("TELEFONO");
-            tabla.addCell("CORREO");
-            tabla.addCell("FECHA DE NACIMIENTO");
-            tabla.addCell("GENERO");
-            tabla.addCell("CEDULA");
-            tabla.addCell("LUGAR DE NACIMIENTO");
-            tabla.addCell("ENFERMEDADES");
-
-            try {
-                // CONEXION A LA DESENCRIPTADA
-                Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/registrosocial", "root", "samuel");
-                PreparedStatement pst = cn.prepareStatement("select * from datos_registro_personas");
-
-                ResultSet rs1 = pst.executeQuery();
-
-                if (rs1.next()) { // AQUI VALIDA QUE SI ENCONRO LOS DATOS LOS TRAIGA
-                    do{
-                        tabla.addCell(rs1.getString(1));
-                        tabla.addCell(rs1.getString(2));
-                        tabla.addCell(rs1.getString(3));
-                        tabla.addCell(rs1.getString(4));
-                        tabla.addCell(rs1.getString(5));
-                        tabla.addCell(rs1.getString(6));
-                        tabla.addCell(rs1.getString(7));
-                        tabla.addCell(rs1.getString(8));
-                        tabla.addCell(rs1.getString(9));
-                        tabla.addCell(rs1.getString(10));
-                        tabla.addCell(rs1.getString(11));
-                        tabla.addCell(rs1.getString(12));
-                    } while (rs1.next());
-                    documento.add(tabla);
-                }
-            } catch (DocumentException | SQLException e) {
-                JOptionPane.showMessageDialog(null, "error " + e);
+            String[] headers = {"CLAVE", "NOMBRE", "APELLIDOS", "EDAD", "DIRECCION", "TELEFONO",
+                "CORREO", "FECHA DE NACIMIENTO", "GENERO", "CEDULA", "LUGAR DE NACIMIENTO", "ENFERMEDADES"};
+            for (String header : headers) {
+                tabla.addCell(header);
             }
+
+            try (Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/registraduria", "root", "samuel0216"); 
+                 PreparedStatement pst = cn.prepareStatement("SELECT * FROM datos_registro_personas"); 
+                    ResultSet rs1 = pst.executeQuery()) {
+
+                while (rs1.next()) {
+                    for (int i = 1; i <= 12; i++) {
+                        tabla.addCell(rs1.getString(i));
+                    }
+                }
+                documento.add(tabla);
+            } catch (DocumentException | SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error en la consulta SQL: " + e.getMessage());
+            }
+
             documento.close();
-            
-            
-            
-            // ENCRIPTADOS
-            String ruta1 = System.getProperty("user.home");
-            PdfWriter.getInstance(documento1, new FileOutputStream(ruta1 + "/Desktop/encriptados.pdf"));
+
+            // SEGUNDO DOCUMENTO (ENCRIPTADOS)
+            PdfWriter.getInstance(documento1, new FileOutputStream(ruta + "/Desktop/Encriptados.pdf"));
             documento1.open();
 
-            documento1.add(img);
-            documento1.add(parrafo);
-            
-            // AQUI PONGO CUANTAS COLUMNAS VA A TENER EL PDF Y EL TITULO DE CADA COLUMNA CON ADDCELL
+            Image img1 = Image.getInstance("src/mdRegistraduria/BanderaColombia.jpg");
+            img1.scaleToFit(650, 1000);
+            img1.setAlignment(Chunk.ALIGN_CENTER);
+
+            Paragraph parrafo1 = new Paragraph();
+            parrafo1.setAlignment(Paragraph.ALIGN_CENTER);
+            parrafo1.setFont(FontFactory.getFont("Tahoma", 18, Font.BOLD, BaseColor.BLUE));
+            parrafo1.add("REPUBLICA DE COLOMBIA \n\n");
+            parrafo1.add("REGISTROS ENCRIPTADOS \n\n");
+
+            documento1.add(img1);
+            documento1.add(parrafo1);
+
             PdfPTable tabla1 = new PdfPTable(12);
-            tabla1.addCell("CLAVE");
-            tabla1.addCell("NOMBRE");
-            tabla1.addCell("APELLIDOS");
-            tabla1.addCell("EDAD");
-            tabla1.addCell("DIRECCION");
-            tabla1.addCell("TELEFONO");
-            tabla1.addCell("CORREO");
-            tabla1.addCell("FECHA DE NACIMIENTO");
-            tabla1.addCell("GENERO");
-            tabla1.addCell("CEDULA");
-            tabla1.addCell("LUGAR DE NACIMIENTO");
-            tabla1.addCell("ENFERMEDADES");
-
-            try{
-                // CONEXION A LA ENCRIPTADA
-                Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/registrosocial", "root", "samuel");
-                PreparedStatement pst = cn.prepareStatement("select * from datos_registro_personas");
-
-                ResultSet rs2 = pst.executeQuery();
-                if(rs2.next()){
-                   do{
-                        tabla1.addCell(rs2.getString(1));
-                        tabla1.addCell(rs2.getString(2));
-                        tabla1.addCell(rs2.getString(3));
-                        tabla1.addCell(rs2.getString(4));
-                        tabla1.addCell(rs2.getString(5));
-                        tabla1.addCell(rs2.getString(6));
-                        tabla1.addCell(rs2.getString(7));
-                        tabla1.addCell(rs2.getString(8));
-                        tabla1.addCell(rs2.getString(9));
-                        tabla1.addCell(rs2.getString(10));
-                        tabla1.addCell(rs2.getString(11));
-                        tabla1.addCell(rs2.getString(12));
-                   }while(rs2.next());
-                   documento1.add(tabla1);
-                }
-                
-            }catch(DocumentException | SQLException e){
-                JOptionPane.showMessageDialog(null, "error " + e);
+            for (String header : headers) {
+                tabla1.addCell(header);
             }
+
+            try (Connection cn = DriverManager.getConnection("jdbc:mysql://localhost/registraduria", "root", "samuel0216"); 
+                    PreparedStatement pst = cn.prepareStatement("SELECT * FROM datos_registro_personas");
+                    ResultSet rs2 = pst.executeQuery()) {
+
+                while (rs2.next()) {
+                    for (int i = 1; i <= 12; i++) {
+                        tabla1.addCell(rs2.getString(i));
+                    }
+                }
+                documento1.add(tabla1);
+            } catch (DocumentException | SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error en la consulta SQL: " + e.getMessage());
+            }
+
             documento1.close();
 
-            JOptionPane.showMessageDialog(null, "PDF creado exitosamente");
-        } catch (DocumentException | HeadlessException | FileNotFoundException s) {
-            JOptionPane.showMessageDialog(null, "errot " + s);
-            
-        } catch (IOException ex) {
-            Logger.getLogger(RegistroSocial.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "PDFs creados exitosamente");
+
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error general: " + e.getMessage());
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
